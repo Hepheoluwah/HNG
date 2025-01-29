@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creative Profile Card</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f0f4f8;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark-mode {
+      background-color: #121212;
+      color: white;
+    }
+
+    .profile-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 320px;
+      text-align: center;
+      padding: 20px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .profile-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    body.dark-mode .profile-card {
+      background: #1e1e1e;
+      box-shadow: 0 8px 16px rgba(255, 255, 255, 0.1);
+    }
+
+    .profile-card img {
+      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+    }
+
+    h2[data-testid="fullName"] {
+      font-size: 1.8rem;
+      margin-top: 15px;
+    }
+
+    p[data-testid="jobTitle"] {
+      color: #6c757d;
+      margin-top: 5px;
+    }
+
+    p[data-testid="shortBio"] {
+      margin-top: 15px;
+      font-size: 0.95rem;
+      color: #495057;
+    }
+
+    p[data-testid="currentLocation"] {
+      margin-top: 10px;
+      color: #007bff;
+    }
+
+    a[data-testid="emailAddress"] {
+      display: block;
+      color: #17a2b8;
+      text-decoration: none;
+      margin-top: 10px;
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .social-links a {
+      color: #495057;
+      font-size: 1.5rem;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .social-links a:hover {
+      color: #007bff;
+    }
+
+    p[data-testid="currentTimeUTC"] {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #28a745;
+    }
+
+    .skills {
+      margin-top: 15px;
+    }
+
+    .skills-badge {
+      background-color: #007bff;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      margin: 5px;
+      display: inline-block;
+    }
+
+    .theme-toggle {
+      margin-top: 20px;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .fun-fact {
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 15px;
+      color: #495057;
+    }
+
+    body.dark-mode .fun-fact {
+      background: #333;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-card">
+    <img src="images/myself.png" alt="Profile Picture" data-testid="profilePicture">
+    <h2 data-testid="fullName">Ifeoluwa Adeniran</h2>
+    <p data-testid="jobTitle">Frontend Developer</p>
+    <p data-testid="shortBio">A passionate frontend developer with a love for creating user-friendly and visually appealing web applications. Constantly learning and exploring new technologies.</p>
+    <p data-testid="currentLocation">Lagos, Nigeria</p>
+    <a href="mailto:deniranifeoluwa@gmail.com" data-testid="emailAddress">deniranifeoluwa@gmail.com</a>
+
+    <div class="social-links" data-testid="socialLinks">
+      <a href="https://github.com/ifeoluwa" target="_blank"><i class="fab fa-github"></i></a>
+      <a href="https://linkedin.com/in/ifeoluwa" target="_blank"><i class="fab fa-linkedin"></i></a>
+      <a href="https://twitter.com/ifeoluwa" target="_blank"><i class="fab fa-twitter"></i></a>
+    </div>
+
+    <div class="skills">
+      <span class="skills-badge">MERN STACK</span>
+
+    </div>
+
+    <p data-testid="currentTimeUTC" id="utcTime"></p>
+
+    <div class="theme-toggle" onclick="toggleTheme()">🌙 Toggle Dark Mode</div>
+
+    <div class="fun-fact" id="funFact"></div>
+  </div>
+
+  <script>
+    // Set current UTC time
+    function updateUTCTime() {
+      const now = new Date();
+      document.getElementById("utcTime").textContent = `Current UTC Time: ${now.toUTCString()}`;
+    }
+    updateUTCTime();
+    setInterval(updateUTCTime, 1000);
+
+    // Dark mode toggle
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+    }
+
+    // Fun facts array
+    const funFacts = [
+      "I once built a game in 48 hours",
+      "I love problem-solving and debugging code.",
+      "Coffee fuels my coding sessions!",
+      "I'm a big fan of open-source projects.",
+      "Learning never stops for me — always exploring new tech."
+    ];
+
+    // Display random fun fact
+    function displayFunFact() {
+      const fact = funFacts[Math.floor(Math.random() * funFacts.length)];
+      document.getElementById("funFact").textContent = `Fun Fact: ${fact}`;
+    }
+
+    displayFunFact();
+  </script>
+</body>
+</html>
