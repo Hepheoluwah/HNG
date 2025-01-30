@@ -139,6 +139,67 @@
       background: #1f1f1f;
       color: white;
     }
+
+    /* Rate Card Styles */
+    .show-rate-card {
+      background-color: #4d9fef;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+      font-size: 1rem;
+      transition: background-color 0.3s;
+    }
+
+    .show-rate-card:hover {
+      background-color: #3a8bc9;
+    }
+
+    .rate-card {
+      background: #f9f9f9;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .rate-card h3 {
+      margin-bottom: 15px;
+      font-size: 1.6rem;
+      color: #333;
+    }
+
+    .rate-card table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .rate-card table th,
+    .rate-card table td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    .rate-card table th {
+      background-color: #4d9fef;
+      color: white;
+    }
+
+    .rate-card table td {
+      background-color: #f4f4f4;
+    }
+
+    .rate-card table tr:nth-child(even) td {
+      background-color: #fafafa;
+    }
+
+    .rate-card table tr:hover td {
+      background-color: #e9e9e9;
+    }
   </style>
 </head>
 <body>
@@ -164,8 +225,42 @@
     <p data-testid="currentTimeUTC" id="utcTime"></p>
 
     <div class="theme-toggle" onclick="toggleTheme()">🌙</div>
+<!-- 
+    <div class="fun-fact" id="funFact"></div> -->
 
-    <div class="fun-fact" id="funFact"></div>
+    <!-- Button to toggle Rate Card visibility -->
+    <button class="show-rate-card" onclick="toggleRateCard()">Show Rate Card</button>
+
+    <!-- Hidden Rate Card Section -->
+    <div class="rate-card" id="rateCard" style="display: none;">
+      <h3>Rate Card</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Service</th>
+            <th>Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Hourly Rate</td>
+            <td>$20/hr</td>
+          </tr>
+          <tr>
+            <td>Project (Basic)</td>
+            <td>$500</td>
+          </tr>
+          <tr>
+            <td>Project (Advanced)</td>
+            <td>$1000</td>
+          </tr>
+          <tr>
+            <td>Consultation</td>
+            <td>$50/hr</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <script>
@@ -204,13 +299,21 @@
     ];
 
     // Display random fun fact every 10 seconds
-    function displayFunFact() {
-      const fact = funFacts[Math.floor(Math.random() * funFacts.length)];
-      document.getElementById("funFact").textContent = `Fun Fact: ${fact}`;
+    function showFunFact() {
+      const randomFact = funFacts[Math.floor(Math.random() * funFacts.length)];
+      document.getElementById('funFact').textContent = randomFact;
     }
+    setInterval(showFunFact, 10000);
 
-    displayFunFact();
-    setInterval(displayFunFact, 10000);
+    // Show or hide the rate card
+    function toggleRateCard() {
+      const rateCard = document.getElementById('rateCard');
+      if (rateCard.style.display === 'none') {
+        rateCard.style.display = 'block';
+      } else {
+        rateCard.style.display = 'none';
+      }
+    }
   </script>
 </body>
 </html>
