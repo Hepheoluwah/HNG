@@ -1,185 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Color Quest</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Arial', sans-serif;
-    }
-    body {
-      background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(200, 200, 255, 0.9));
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-    }
-    .game-container {
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-      text-align: center;
-      max-width: 400px;
-      width: 100%;
-    }
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 20px;
-    }
-    .color-box {
-      width: 100px;
-      height: 100px;
-      border-radius: 10px;
-      margin: 20px auto;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease-in-out;
-    }
-    .color-box.correct {
-      transform: scale(1.1);
-    }
-    .color-box.wrong {
-      animation: shake 0.3s;
-    }
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
-    }
-    .color-options {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-    }
-    .color-button {
-      width: 70px;
-      height: 70px;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s;
-    }
-    .color-button:hover {
-      transform: scale(1.1);
-    }
-    .status-message {
-      font-size: 1.2em;
-      margin: 15px 0;
-    }
-    .score {
-      font-size: 1.5em;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-    .new-game-button {
-      background: #007bff;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1em;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    }
-    .new-game-button:hover {
-      background: #0056b3;
-    }
-    footer {
-      position: fix
-      bottom: 10px;
-      width: 100%;
-      text-align: center;
-      font-size: 1em;
-      color: #777;
-    }
-  </style>
-</head>
-<body>
-  <div class="game-container">
-    <h1>Color Quest</h1>
-    <div id="colorBox" class="color-box" data-testid="colorBox"></div>
-    <p data-testid="gameInstructions">Guess the correct color!</p>
-    <div class="color-options">
-      <!-- Buttons will be inserted dynamically here -->
-    </div>
-    <p id="gameStatus" class="status-message" data-testid="gameStatus"></p>
-    <p id="score" class="score" data-testid="score">Score: 0</p>
-    <button id="newGameButton" class="new-game-button" data-testid="newGameButton">New Game</button>
-  </div>
-
-  <footer>
-    <p>Designed by <a href="https://ifeoluwa-dev.vercel.app/" target="_blank" style="color: #007bff;">Ifeoluwa.dev</a> &copy; 2025</p>
-  </footer>
-
-  <script>
-    const colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A8', '#FFC733', '#8D33FF'];
-    const colorBox = document.getElementById('colorBox');
-    const colorOptionsContainer = document.querySelector('.color-options');
-    const gameStatus = document.getElementById('gameStatus');
-    const scoreDisplay = document.getElementById('score');
-    const newGameButton = document.getElementById('newGameButton');
-    let targetColor = '';
-    let score = 0;
-
-    function resetGame() {
-      score = 0;
-      scoreDisplay.textContent = `Score: ${score}`;
-      gameStatus.textContent = '';
-      gameStatus.style.color = '';
-      startNewRound();
-    }
-
-    function startNewRound() {
-      targetColor = colors[Math.floor(Math.random() * colors.length)];
-      colorBox.style.backgroundColor = targetColor;
-      renderColorOptions();
-    }
-
-    function renderColorOptions() {
-      colorOptionsContainer.innerHTML = '';
-      colors.forEach(color => {
-        const button = document.createElement('button');
-        button.classList.add('color-button');
-        button.style.backgroundColor = color;
-        button.dataset.testid = 'colorOption';
-        button.addEventListener('click', () => handleColorGuess(color));
-        colorOptionsContainer.appendChild(button);
-      });
-    }
-
-    function handleColorGuess(color) {
-      if (color === targetColor) {
-        score++;
-        if (score === 5) {
-          gameStatus.textContent = 'Color Genius! You nailed 5 straight guesses!';
-          gameStatus.style.color = 'blue';
-        } else if (score === 10) {
-          gameStatus.textContent = 'Eagle Eyes! You nailed 10 straight guesses!';
-          gameStatus.style.color = 'blue';
-        } else {
-          gameStatus.textContent = 'Correct! Keep going!';
-          gameStatus.style.color = 'green';
-        }
-        scoreDisplay.textContent = `Score: ${score}`;
-        startNewRound();
-      } else {
-        gameStatus.textContent = 'Wrong! Try again!';
-        gameStatus.style.color = 'red';
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Color Quest</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Arial", sans-serif;
       }
-    }
+      body {
+        background: linear-gradient(
+          to right,
+          rgba(255, 255, 255, 0.9),
+          rgba(200, 200, 255, 0.9)
+        );
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+      .game-container {
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        max-width: 400px;
+        width: 100%;
+      }
+      h1 {
+        font-size: 2.5em;
+        margin-bottom: 20px;
+      }
+      .color-box {
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+        margin: 20px auto;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out;
+      }
+      .color-box.correct {
+        transform: scale(1.1);
+      }
+      .color-box.wrong {
+        animation: shake 0.3s;
+      }
+      @keyframes shake {
+        0% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        50% {
+          transform: translateX(5px);
+        }
+        75% {
+          transform: translateX(-5px);
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+      .color-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+      }
+      .color-button {
+        width: 70px;
+        height: 70px;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+      }
+      .color-button:hover {
+        transform: scale(1.1);
+      }
+      .status-message {
+        font-size: 1.2em;
+        margin: 15px 0;
+      }
+      .score {
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+      .new-game-button {
+        background: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+      .new-game-button:hover {
+        background: #0056b3;
+      }
+      footer {
+        position: fixed;
+        bottom: 10px;
+        width: 100%;
+        text-align: center;
+        font-size: 1em;
+        color: #777;
+      }
+    
+    </style>
+  </head>
+  <body>
+    <div class="game-container">
+      <h1>Color Quest</h1>
+      <div id="colorBox" class="color-box" data-testid="colorBox"></div>
+      <p data-testid="gameInstructions">Guess the correct color!</p>
+      <div class="color-options">
+        <!-- Buttons will be inserted dynamically here -->
+      </div>
+      <p id="gameStatus" class="status-message" data-testid="gameStatus"></p>
+      <p id="score" class="score" data-testid="score">Score: 0</p>
+      <button
+        id="newGameButton"
+        class="new-game-button"
+        data-testid="newGameButton"
+      >
+        New Game
+      </button>
+    </div>
 
-    newGameButton.addEventListener('click', resetGame);
+    <footer>
+      <p>
+        Designed by
+        <a
+          href="https://0xifeoluwa.vercel.app/"
+          target="_blank"
+          style="color: #007bff"
+          >Ifeoluwa.dev</a
+        >
+        &copy; 2025
+      </p>
+    </footer>
 
-    // Initialize the game
-    resetGame();
-  </script>
-</body>
+    <script>
+      const colors = [
+        "#FF5733",
+        "#33FF57",
+        "#3357FF",
+        "#FF33A8",
+        "#FFC733",
+        "#8D33FF",
+      ];
+      const colorBox = document.getElementById("colorBox");
+      const colorOptionsContainer = document.querySelector(".color-options");
+      const gameStatus = document.getElementById("gameStatus");
+      const scoreDisplay = document.getElementById("score");
+      const newGameButton = document.getElementById("newGameButton");
+      let targetColor = "";
+      let score = 0;
+
+      function resetGame() {
+        score = 0;
+        scoreDisplay.textContent = `Score: ${score}`;
+        gameStatus.textContent = "";
+        gameStatus.style.color = "";
+        startNewRound();
+      }
+
+      function startNewRound() {
+        targetColor = colors[Math.floor(Math.random() * colors.length)];
+        colorBox.style.backgroundColor = targetColor;
+        renderColorOptions();
+      }
+
+      function renderColorOptions() {
+        colorOptionsContainer.innerHTML = "";
+        colors.forEach((color) => {
+          const button = document.createElement("button");
+          button.classList.add("color-button");
+          button.style.backgroundColor = color;
+          button.dataset.testid = "colorOption";
+          button.addEventListener("click", () => handleColorGuess(color));
+          colorOptionsContainer.appendChild(button);
+        });
+      }
+
+      function handleColorGuess(color) {
+        if (color === targetColor) {
+          score++;
+          if (score === 5) {
+            gameStatus.textContent =
+              "Color Genius! You nailed 5 straight guesses!";
+            gameStatus.style.color = "blue";
+          } else if (score === 10) {
+            gameStatus.textContent =
+              "Eagle Eyes! You nailed 10 straight guesses!";
+            gameStatus.style.color = "blue";
+          } else {
+            gameStatus.textContent = "Correct! Keep going!";
+            gameStatus.style.color = "green";
+          }
+          scoreDisplay.textContent = `Score: ${score}`;
+          startNewRound();
+        } else {
+          gameStatus.textContent = "Wrong! Try again!";
+          gameStatus.style.color = "red";
+        }
+      }
+
+      newGameButton.addEventListener("click", resetGame);
+
+      // Initialize the game
+      resetGame();
+    </script>
+  </body>
 </html>
