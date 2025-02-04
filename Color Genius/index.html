@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Color Match Quest</title>
+  <title>Color Quest</title>
   <style>
     * {
       box-sizing: border-box;
@@ -93,7 +93,7 @@
       background: #0056b3;
     }
     footer {
-      position: fixed;
+      position: fix
       bottom: 10px;
       width: 100%;
       text-align: center;
@@ -104,7 +104,7 @@
 </head>
 <body>
   <div class="game-container">
-    <h1>Color Match Quest</h1>
+    <h1>Color Quest</h1>
     <div id="colorBox" class="color-box" data-testid="colorBox"></div>
     <p data-testid="gameInstructions">Guess the correct color!</p>
     <div class="color-options">
@@ -159,7 +159,7 @@
       if (color === targetColor) {
         score++;
         if (score === 5) {
-          gameStatus.textContent = 'Color Visionnaire! You nailed 5 straight guesses!';
+          gameStatus.textContent = 'Color Genius! You nailed 5 straight guesses!';
           gameStatus.style.color = 'blue';
         } else if (score === 10) {
           gameStatus.textContent = 'Eagle Eyes! You nailed 10 straight guesses!';
