@@ -1,0 +1,128 @@
+import React, { useState, useEffect } from "react";
+import Header from "./Header";
+import { useNavigate } from "react-router-dom";
+
+const AttendeeDetailsPage = () => {
+  const navigate = useNavigate();
+
+  // Load saved form data from localStorage
+  const [name, setName] = useState(localStorage.getItem("attendeeName") || "");
+  const [email, setEmail] = useState(localStorage.getItem("attendeeEmail") || "");
+  const [avatar, setAvatar] = useState(localStorage.getItem("attendeeAvatar") || "");
+  const [errors, setErrors] = useState({ name: "", email: "", avatar: "" });
+
+  // Save form data to localStorage on change
+  useEffect(() => {
+    localStorage.setItem("attendeeName", name);
+    localStorage.setItem("attendeeEmail", email);
+    localStorage.setItem("attendeeAvatar", avatar);
+  }, [name, email, avatar]);
+
+  // Validate form fields
+  const validateForm = () => {
+    let isValid = true;
+    let newErrors = { name: "", email: "", avatar: "" };
+
+    if (!name.trim()) {
+      newErrors.name = "Name is required.";
+      isValid = false;
+    }
+
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Enter a valid email address.";
+      isValid = false;
+    }
+
+    if (avatar && !/^https?:\/\/res.cloudinary\.com\/.*$/.test(avatar)) {
+      newErrors.avatar = "Only Cloudinary image URLs are allowed.";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      navigate("/ticket-confirmation");
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0c1b1f] text-white p-6">
+      <Header />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="bg-[#041e23] p-8 rounded-2xl shadow-lg w-full max-w-md border border-[#1c3b4a]">
+          <h2 className="text-2xl">Attendee Details</h2>
+          <div className="w-full h-1 bg-gradient-to-r from-[#1aa7ec] to-[#1c3b4a] mt-2 mb-4"></div>
+
+          {/* Upload Avatar */}
+          <div className="mb-6">
+            <label className="text-sm text-gray-300">Upload Profile Photo</label>
+            <input
+              type="url"
+              placeholder="Enter Cloudinary Image URL"
+              className={`w-full p-3 mt-1 bg-[#0d1e24] text-white rounded-xl border ${
+                errors.avatar ? "border-red-500" : "border-[#1c3b4a]"
+              } focus:outline-none focus:ring-2 focus:ring-[#1aa7ec]`}
+              value={avatar}
+              onChange={(e) => setAvatar(e.target.value)}
+              aria-describedby="avatarError"
+            />
+            {errors.avatar && <p id="avatarError" className="text-red-500 text-xs">{errors.avatar}</p>}
+          </div>
+
+          {/* Name Input */}
+          <div className="mb-4">
+            <label className="text-sm text-gray-300">Full Name</label>
+            <input
+              type="text"
+              className={`w-full p-3 mt-1 bg-[#0d1e24] text-white rounded-xl border ${
+                errors.name ? "border-red-500" : "border-[#1c3b4a]"
+              } focus:outline-none focus:ring-2 focus:ring-[#1aa7ec]`}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              aria-describedby="nameError"
+            />
+            {errors.name && <p id="nameError" className="text-red-500 text-xs">{errors.name}</p>}
+          </div>
+
+          {/* Email Input */}
+          <div className="mb-4">
+            <label className="text-sm text-gray-300">Email Address</label>
+            <input
+              type="email"
+              className={`w-full p-3 mt-1 bg-[#0d1e24] text-white rounded-xl border ${
+                errors.email ? "border-red-500" : "border-[#1c3b4a]"
+              } focus:outline-none focus:ring-2 focus:ring-[#1aa7ec]`}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              aria-describedby="emailError"
+            />
+            {errors.email && <p id="emailError" className="text-red-500 text-xs">{errors.email}</p>}
+          </div>
+
+          {/* Buttons */}
+          <div className="flex justify-between mt-4">
+            <button
+              className="w-[45%] bg-[#08252b] px-6 py-3 rounded-xl text-[#24a0b5] border border-[#24a0b5] hover:scale-95 transition"
+              onClick={() => navigate("/ticket-selection")}
+            >
+              Back
+            </button>
+            <button
+              className="w-[50%] bg-[#24a0b5] px-6 py-3 rounded-xl text-white border border-[#24a0b5] hover:scale-95 transition"
+              onClick={handleSubmit}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AttendeeDetailsPage;
