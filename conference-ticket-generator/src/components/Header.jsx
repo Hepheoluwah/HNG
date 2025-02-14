@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { HiMenu, HiX } from "react-icons/hi"; // Ensure react-icons is installed
+// import { useState } from "react";
+// import { HiMenu, HiX } from "react-icons/hi"; // Ensure react-icons is installed
 // import { FaTicketAlt } from "react-icons/fa"; // Example icon for ticket
 import { useLocation } from "react-router-dom"; // For React Router (if used)
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation(); // Get current route
 
   // Function to determine the active link
@@ -74,15 +74,15 @@ const Header = () => {
       </button>
 
       {/* Mobile Menu Button */}
-      <button
+      {/* <button
         className="md:hidden text-white text-2xl"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
       >
         {isMenuOpen ? <HiX /> : <HiMenu />}
-      </button>
+      </button> */}
 
       {/* Mobile Layout */}
-      {isMenuOpen && (
+      {/* {isMenuOpen && (
         <div className="absolute top-16 left-0 w-full bg-[#041e23] p-6 shadow-lg flex flex-col items-center space-y-4 z-50 md:hidden">
           <a href="/" className={`font-jejumyeongjo font-semibold ${getLinkClass("/")}`}>
             Events
@@ -97,7 +97,7 @@ const Header = () => {
             MY TICKETS →
           </button>
         </div>
-      )}
+      )} */}
 
       {/* Mobile Button Always Visible */}
       <button className="md:hidden bg-white text-black px-5 py-3 rounded-xl border border-gray-300 shadow-md">

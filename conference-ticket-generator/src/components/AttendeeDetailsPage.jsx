@@ -9,6 +9,7 @@ const AttendeeDetailsPage = () => {
   const [email, setEmail] = useState("");
   const [specialRequest, setSpecialRequest] = useState("");
   const [profileImage, setProfileImage] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -47,6 +48,8 @@ const AttendeeDetailsPage = () => {
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
     if (file) {
+      setLoading(true); // Start loading
+
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", "unsigned-upload-preset");
@@ -61,6 +64,7 @@ const AttendeeDetailsPage = () => {
           }
         );
         const data = await res.json();
+
         if (data.secure_url) {
           setProfileImage(data.secure_url);
           await saveToDB("profileImage", data.secure_url);
@@ -75,6 +79,8 @@ const AttendeeDetailsPage = () => {
           ...prevErrors,
           profileImage: "An error occurred while uploading the image.",
         }));
+      } finally {
+        setLoading(false); // Stop loading whether successful or not
       }
     }
   };
@@ -118,40 +124,52 @@ const AttendeeDetailsPage = () => {
 
   return (
     <div
-    className="min-h-screen gap-[40px] text-white p-4 md:p-6"
-    style={{
-      borderColor: "#0E464F",
-      background:
-        "radial-gradient(52.52% 32.71% at 50% 97.66%, rgba(36, 160, 181, 0.20) 0%, rgba(36, 160, 181, 0.00) 100%), #02191D",
-    }}
-  >
+      className="min-h-screen gap-[40px] text-white p-4 md:p-6"
+      style={{
+        borderColor: "#0E464F",
+        background:
+          "radial-gradient(52.52% 32.71% at 50% 97.66%, rgba(36, 160, 181, 0.20) 0%, rgba(36, 160, 181, 0.00) 100%), #02191D",
+      }}
+    >
       <Header />
       <div className="flex items-center justify-center flex-grow pt-4 md:pt-7">
         <div className="bg-[#041e23] p-4 md:p-8 lg:p-12 rounded-3xl shadow-lg w-full max-w-[700px] border border-[#1c3b4a]">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-0">
-            <h2 className="text-xl md:text-2xl tracking-wide">Attendee Details</h2>
+            <h2 className="text-xl md:text-2xl tracking-wide">
+              Attendee Details
+            </h2>
             <p className="text-xs md:text-sm text-white">Step 2/3</p>
           </div>
 
           {/* Progress Bar */}
           <div className="w-full h-1 flex mt-2 mb-4">
-            <div className="w-2/3 h-full bg-[#24a0b5]"/>
-            <div className="w-1/3 h-full bg-[#1c3b4a]"/>
+            <div className="w-2/3 h-full bg-[#24a0b5]" />
+            <div className="w-1/3 h-full bg-[#1c3b4a]" />
           </div>
 
           <div className="bg-[#08252b] p-3 md:p-4 rounded-xl border border-[#1c3b4a]">
-            <div 
-              className="bg-[#052228] w-full p-4 md:p-6 rounded-xl border border-[#1c3b4a] text-center relative" 
-              onDragOver={handleDragOver} 
+            <div
+              className="bg-[#052228] w-full p-4 md:p-6 rounded-xl border border-[#1c3b4a] text-center relative"
+              onDragOver={handleDragOver}
               onDrop={handleDrop}
             >
-              <p className="text-sm text-gray-300 mb-4 text-left pb-2">Upload Profile Photo</p>
+              <p className="text-sm text-gray-300 mb-4 text-left pb-2">
+                Upload Profile Photo
+              </p>
               <div className="relative w-full h-[200px] flex justify-center items-center bg-[#041e23] rounded-lg">
-                {profileImage ? (
+                {loading ? (
+                  <div className="absolute flex justify-center items-center w-full h-full bg-[#041e23] rounded-lg">
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#1aa7ec]"></div>
+                  </div>
+                ) : profileImage ? (
                   <div className="relative">
-                    <img src={profileImage} alt="Profile" className="h-32 md:h-40 w-32 md:w-40 object-cover rounded-xl" />
-                    <button 
-                      onClick={handleRemoveImage} 
+                    <img
+                      src={profileImage}
+                      alt="Profile"
+                      className="h-40 w-40 object-cover rounded-2xl border-4 border-[#0e464f] shadow-md"
+                    />
+                    <button
+                      onClick={handleRemoveImage}
                       className="absolute top-1 right-1 bg-red-600 text-white p-1 text-xs rounded-full"
                     >
                       ✖
@@ -160,19 +178,42 @@ const AttendeeDetailsPage = () => {
                 ) : (
                   <label className="flex flex-col pb-4 items-center justify-center border-[4px] border-[#24a0b5] cursor-pointer bg-[#0e464f] p-4 rounded-[32px] w-[180px] md:w-[240px] h-[180px] md:h-[240px]">
                     <span className="text-4xl text-[#1aa7ec]">
-                      <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M23.2639 8.81608C22.6812 4.22675 18.7505 0.666748 14.0052 0.666748C10.3305 0.666748 7.13854 2.81475 5.68121 6.20008C2.81721 7.05608 0.671875 9.76008 0.671875 12.6667C0.671875 16.3427 3.66254 19.3334 7.33854 19.3334H8.67188V16.6667H7.33854C5.13321 16.6667 3.33854 14.8721 3.33854 12.6667C3.33854 10.7947 4.93721 8.99075 6.90254 8.64542L7.67721 8.50941L7.93321 7.76542C8.87054 5.03075 11.1972 3.33341 14.0052 3.33341C17.6812 3.33341 20.6719 6.32408 20.6719 10.0001V11.3334H22.0052C23.4759 11.3334 24.6719 12.5294 24.6719 14.0001C24.6719 15.4707 23.4759 16.6667 22.0052 16.6667H19.3385V19.3334H22.0052C24.9465 19.3334 27.3385 16.9414 27.3385 14.0001C27.337 12.8048 26.9347 11.6445 26.196 10.7047C25.4574 9.76498 24.425 9.1 23.2639 8.81608Z" fill="#FAFAFA"/>
-                        <path d="M15.3385 12.6667V7.33342H12.6719V12.6667H8.67188L14.0052 19.3334L19.3385 12.6667H15.3385Z" fill="#FAFAFA"/>
+                      <svg
+                        width="28"
+                        height="20"
+                        viewBox="0 0 28 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M23.2639 8.81608C22.6812 4.22675 18.7505 0.666748 14.0052 0.666748C10.3305 0.666748 7.13854 2.81475 5.68121 6.20008C2.81721 7.05608 0.671875 9.76008 0.671875 12.6667C0.671875 16.3427 3.66254 19.3334 7.33854 19.3334H8.67188V16.6667H7.33854C5.13321 16.6667 3.33854 14.8721 3.33854 12.6667C3.33854 10.7947 4.93721 8.99075 6.90254 8.64542L7.67721 8.50941L7.93321 7.76542C8.87054 5.03075 11.1972 3.33341 14.0052 3.33341C17.6812 3.33341 20.6719 6.32408 20.6719 10.0001V11.3334H22.0052C23.4759 11.3334 24.6719 12.5294 24.6719 14.0001C24.6719 15.4707 23.4759 16.6667 22.0052 16.6667H19.3385V19.3334H22.0052C24.9465 19.3334 27.3385 16.9414 27.3385 14.0001C27.337 12.8048 26.9347 11.6445 26.196 10.7047C25.4574 9.76498 24.425 9.1 23.2639 8.81608Z"
+                          fill="#FAFAFA"
+                        />
+                        <path
+                          d="M15.3385 12.6667V7.33342H12.6719V12.6667H8.67188L14.0052 19.3334L19.3385 12.6667H15.3385Z"
+                          fill="#FAFAFA"
+                        />
                       </svg>
                     </span>
                     <p className="text-xs md:text-sm pt-4 text-gray-400 text-center mt-1">
-                      Drag & drop or click to<br />upload
+                      Drag & drop or click to
+                      <br />
+                      upload
                     </p>
-                    <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                    />
                   </label>
                 )}
               </div>
-              {errors.profileImage && <p className="text-red-500 text-xs mt-2">{errors.profileImage}</p>}
+              {errors.profileImage && (
+                <p className="text-red-500 text-xs mt-2">
+                  {errors.profileImage}
+                </p>
+              )}
             </div>
 
             <div className="w-full h-1 bg-gradient-to-r from-[#12464e] to-[#1c3b4a] mt-4 mb-4" />
@@ -192,7 +233,9 @@ const AttendeeDetailsPage = () => {
                     saveToDB("name", e.target.value);
                   }}
                 />
-                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                {errors.name && (
+                  <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                )}
               </div>
 
               <div>
@@ -214,11 +257,16 @@ const AttendeeDetailsPage = () => {
                     }}
                   />
                 </div>
-                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                {errors.email && (
+                  <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                )}
               </div>
 
               <div>
-                <label htmlFor="special-request" className="text-sm text-gray-300">
+                <label
+                  htmlFor="special-request"
+                  className="text-sm text-gray-300"
+                >
                   Special request?
                 </label>
                 <textarea

@@ -110,6 +110,13 @@ const TicketConfirmationPage = () => {
             download
           </span>
         </p>
+        
+
+        
+        
+        
+
+
 
         {/* Ticket Container - Wrapped in ref */}
         <div ref={ticketRef} className="bg-[#041e23] p-4 sm:p-6 rounded-2xl shadow-lg border border-[#24a0b5] text-center mx-auto w-full max-w-xs sm:max-w-sm">
