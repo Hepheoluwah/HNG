@@ -117,7 +117,14 @@ const AttendeeDetailsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0c1b1f] text-white p-4 md:p-6 flex flex-col">
+    <div
+    className="min-h-screen gap-[40px] text-white p-4 md:p-6"
+    style={{
+      borderColor: "#0E464F",
+      background:
+        "radial-gradient(52.52% 32.71% at 50% 97.66%, rgba(36, 160, 181, 0.20) 0%, rgba(36, 160, 181, 0.00) 100%), #02191D",
+    }}
+  >
       <Header />
       <div className="flex items-center justify-center flex-grow pt-4 md:pt-7">
         <div className="bg-[#041e23] p-4 md:p-8 lg:p-12 rounded-3xl shadow-lg w-full max-w-[700px] border border-[#1c3b4a]">

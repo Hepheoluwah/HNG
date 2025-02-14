@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import TicketSelectionPage from "./components/TicketSelectionPage";
 import AttendeeDetailsPage from "./components/AttendeeDetailsPage";
 import TicketConfirmationPage from "./components/TicketConfirmationPage";
+import AboutUsPage from "./components/AboutUsPage";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route path="/" element={<TicketSelectionPage />} />
         <Route path="/attendee-details" element={<AttendeeDetailsPage />} />
         <Route path="/ticket-confirmation" element={<TicketConfirmationPage />} />
+        <Route path="/about-us" element={<AboutUsPage />} />
       </Routes>
     </Router>
   );
