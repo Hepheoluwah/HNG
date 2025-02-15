@@ -16,6 +16,8 @@ const AttendeeDetailsPage = () => {
     profileImage: "",
   });
 
+  
+
   // Initialize IndexedDB
   useEffect(() => {
     const loadData = async () => {

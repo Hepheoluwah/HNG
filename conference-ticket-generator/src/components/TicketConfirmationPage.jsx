@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import JsBarcode from "jsbarcode";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-// import Header from "./Header";
+import Header from "./Header";
 
 const TicketConfirmationPage = () => {
   const barcodeRef = useRef(null);
@@ -56,9 +56,9 @@ const TicketConfirmationPage = () => {
   // Function to handle ticket download as PDF
   const downloadTicketAsPDF = () => {
     const ticketElement = ticketRef.current;
-  
+
     if (!ticketElement) return;
-  
+
     // Ensure images are fully loaded before capturing
     setTimeout(() => {
       html2canvas(ticketElement, {
@@ -67,11 +67,11 @@ const TicketConfirmationPage = () => {
         allowTaint: true,
       }).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
-  
+
         const pdf = new jsPDF("p", "mm", "a4");
         const imgWidth = 190;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-  
+
         pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
         pdf.save("Techember_Ticket.pdf");
       });
@@ -80,14 +80,31 @@ const TicketConfirmationPage = () => {
 
   return (
 
-    
-    <div className="min-h-screen  flex flex-col items-center justify-center px-4 sm:px-6 py-6 text-white" style={{background:
-      "radial-gradient(52.52% 32.71% at 50% 97.66%, rgba(36, 160, 181, 0.20) 0%, rgba(36, 160, 181, 0.00) 100%), #02191D",}}>
+  //   <div
+  //   className="min-h-screen gap-[40px] text-white p-4 md:p-6"
+  //   style={{
+  //     borderColor: "#0E464F",
+  //     background:
+  //       "radial-gradient(52.52% 32.71% at 50% 97.66%, rgba(36, 160, 181, 0.20) 0%, rgba(36, 160, 181, 0.00) 100%), #02191D",
+  //   }}
+  // >
 
 
+
+
+    <div
+      className="min-h-screen gap-[40px] flex flex-col  p-4 md:p-6 text-white"
+      style={{
+        background:
+          "radial-gradient(52.52% 32.71% at 50% 97.66%, rgba(36, 160, 181, 0.20) 0%, rgba(36, 160, 181, 0.00) 100%), #02191D",
+      }}
+    >
+      {/* Header Component */}
+      <Header />
+
+      <div className="flex items-center justify-center text-white p-4 md:p-6">
 
       <div className="bg-[#041e23] p-6 sm:p-12 rounded-3xl shadow-lg w-full max-w-md sm:max-w-lg border border-[#24a0b5]">
-        
         {/* Progress Bar & Header */}
         <div className="text-center mb-4 sm:mb-6">
           <div className="flex justify-between text-gray-300 text-xs sm:text-sm">
@@ -105,23 +122,19 @@ const TicketConfirmationPage = () => {
         </h2>
         <p className="text-gray-400 text-xs sm:text-sm text-center mb-4">
           Check your email for a copy or{" "}
-          <span className="font-semibold text-white underline cursor-pointer"
-          onClick={downloadTicketAsPDF}>
+          <span
+            className="font-semibold text-white underline cursor-pointer"
+            onClick={downloadTicketAsPDF}
+          >
             download
           </span>
         </p>
 
-        
-        
-
-        
-        
-        
-
-
-
         {/* Ticket Container - Wrapped in ref */}
-        <div ref={ticketRef} className="bg-[#041e23] p-4 sm:p-6 rounded-2xl shadow-lg border border-[#24a0b5] text-center mx-auto w-full max-w-xs sm:max-w-sm">
+        <div
+          ref={ticketRef}
+          className="bg-[#041e23] p-4 sm:p-6 rounded-2xl shadow-lg border border-[#24a0b5] text-center mx-auto w-full max-w-xs sm:max-w-sm"
+        >
           <h2 className="text-lg sm:text-xl font-bold text-[#24a0b5]">
             Techember Fest '25
           </h2>
@@ -212,6 +225,7 @@ const TicketConfirmationPage = () => {
           </button>
         </div>
       </div>
+    </div>
     </div>
   );
 };
