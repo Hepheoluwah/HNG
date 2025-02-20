@@ -54,7 +54,10 @@ const ChatOutput = ({
               )}
               {/* Translation and Summarization Controls */}
               <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-2">
-                <label htmlFor={`lang-select-${msg.id}`} className="text-sm font-semibold">
+                <label
+                  htmlFor={`lang-select-${msg.id}`}
+                  className="text-sm font-semibold"
+                >
                   Translate to:
                 </label>
                 <select
@@ -95,21 +98,27 @@ const ChatOutput = ({
               {msg.translation && (
                 <div className="mt-2 flex items-center">
                   <p className="text-sm italic">
-                    <span className="font-semibold">Translation:</span> {msg.translation}
+                    <span className="font-semibold">Translation:</span>{" "}
+                    {msg.translation}
                   </p>
                   <button
                     onClick={() => {
-                      navigator.clipboard.writeText(msg.translation).then(() => {
-                        setCopiedTranslation((prev) => ({ ...prev, [msg.id]: true }));
-                        setTimeout(
-                          () =>
-                            setCopiedTranslation((prev) => ({
-                              ...prev,
-                              [msg.id]: false,
-                            })),
-                          2000
-                        );
-                      });
+                      navigator.clipboard
+                        .writeText(msg.translation)
+                        .then(() => {
+                          setCopiedTranslation((prev) => ({
+                            ...prev,
+                            [msg.id]: true,
+                          }));
+                          setTimeout(
+                            () =>
+                              setCopiedTranslation((prev) => ({
+                                ...prev,
+                                [msg.id]: false,
+                              })),
+                            2000
+                          );
+                        });
                     }}
                     className="ml-2"
                     aria-label="Copy translation"
@@ -126,24 +135,33 @@ const ChatOutput = ({
                       Copied!
                     </motion.span>
                   )}
-                  <SpeechOutputButton
-                    text={msg.translation}
-                    langCode={msg.translationLanguage}
-                    className="ml-2"
-                    ariaLabel="Play translation"
-                  />
+                  <div className="relative group">
+                    <SpeechOutputButton
+                      text={msg.translation}
+                      langCode={msg.translationLanguage}
+                      className="ml-2"
+                      ariaLabel="Play translation"
+                    />
+                    <span className="absolute bottom-0 left-0 transform translate-y-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      Play translation
+                    </span>
+                  </div>
                 </div>
               )}
               {/* Display Summary */}
               {msg.summary && (
                 <div className="mt-2 flex items-center">
                   <p className="text-sm italic">
-                    <span className="font-semibold">Summary:</span> {msg.summary}
+                    <span className="font-semibold">Summary:</span>{" "}
+                    {msg.summary}
                   </p>
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText(msg.summary).then(() => {
-                        setCopiedSummary((prev) => ({ ...prev, [msg.id]: true }));
+                        setCopiedSummary((prev) => ({
+                          ...prev,
+                          [msg.id]: true,
+                        }));
                         setTimeout(
                           () =>
                             setCopiedSummary((prev) => ({
@@ -169,12 +187,17 @@ const ChatOutput = ({
                       Copied!
                     </motion.span>
                   )}
-                  <SpeechOutputButton
-                    text={msg.summary}
-                    langCode="en-US"
-                    className="ml-2"
-                    ariaLabel="Play summary"
-                  />
+                  <div className="relative group">
+                    <SpeechOutputButton
+                      text={msg.summary}
+                      langCode="en-US"
+                      className="ml-2"
+                      ariaLabel="Play summary"
+                    />
+                    <span className="absolute bottom-0 left-0 transform translate-y-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      Play summary
+                    </span>
+                  </div>
                 </div>
               )}
             </div>

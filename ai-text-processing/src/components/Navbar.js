@@ -1,7 +1,6 @@
-// NavBar.js
 import React from "react";
 import { FaTrash, FaMoon, FaSun } from "react-icons/fa";
-
+import Logo from "..//../src/images/chaticon2.png"
 const NavBar = ({
   currentTheme,
   toggleTheme,
@@ -12,7 +11,15 @@ const NavBar = ({
   return (
     <div className="navbar bg-base-100 shadow px-4 py-2">
       <div className="w-full flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <div className="text-xl font-bold">AI-Powered Text Processing</div>
+        <div className="flex items-center gap-2">
+          {/* Logo Section */}
+          <img
+            src={Logo}
+            alt="Logo"
+            className="w-10 h-10" // Adjust width and height as needed
+          />
+          <div className="text-xl font-bold">AI-Powered Text Processing</div>
+        </div>
         <div className="flex flex-wrap items-center gap-2 justify-center md:justify-end">
           <button
             onClick={saveConversation}

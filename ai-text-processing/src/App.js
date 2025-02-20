@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion"; // Optional: for smooth animations
 import ChatOutput from "./components/ChatOutput";
 import ChatInput from "./components/ChatInput";
 import NavBar from "./components/Navbar";
 import { processText, translateText, summarizeText } from "./services/aiApi";
+import Landingimage from "../src/images/chaticon2.png";
 
 // Supported languages array
 export const LANGUAGES = [
@@ -14,7 +16,39 @@ export const LANGUAGES = [
   { code: "fr", label: "French" },
 ];
 
+// Landing Page Component with Animated Icon and Get Started Button
+const LandingPage = ({ onStart }) => (
+  <div className="flex flex-col justify-center items-center h-screen bg-gray-100 px-4 sm:px-8">
+    {/* Animated icon */}
+    <motion.div
+      className="cursor-pointer"
+      animate={{ scale: [1, 1.2, 1] }}
+      transition={{ duration: 2, repeat: Infinity }}
+      onClick={onStart}
+    >
+      <img
+        src={Landingimage}
+        alt="App Icon"
+        className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48"
+      />
+    </motion.div>
+    <p className="mt-4 text-lg font-bold text-black text-center">
+    AI-Powered Text Processing Interface <br /> Click the icon or the button below to get started!
+    </p>
+    <button
+      onClick={onStart}
+      className="mt-5 px-6 py-3 text-base font-bold text-white bg-black rounded-lg transition-colors duration-300 hover:bg-gray-800 focus:outline-none"
+    >
+      Get Started
+    </button>
+  </div>
+);
+
 function App() {
+  // State to control landing page visibility
+  const [introShown, setIntroShown] = useState(true);
+
+  // Existing states
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
   const [error, setError] = useState(null);
@@ -135,7 +169,10 @@ function App() {
     try {
       const result = await processText(newMessage.text);
       if (result.error) {
-        updateMessageById(newMessage.id, { error: result.error, loading: false });
+        updateMessageById(newMessage.id, {
+          error: result.error,
+          loading: false,
+        });
       } else {
         updateMessageById(newMessage.id, {
           detectedLanguage: result.detectedLanguage || "en",
@@ -143,7 +180,10 @@ function App() {
         });
       }
     } catch (err) {
-      updateMessageById(newMessage.id, { error: "Failed to process text.", loading: false });
+      updateMessageById(newMessage.id, {
+        error: "Failed to process text.",
+        loading: false,
+      });
     }
   };
 
@@ -152,17 +192,25 @@ function App() {
     const msg = messages.find((m) => m.id === id);
     if (!msg) return;
     if (!msg.detectedLanguage) {
-      updateMessageById(id, { error: "Language not detected.", translating: false });
-      return;
-    }
-    if (msg.translationLanguage === msg.detectedLanguage) {
       updateMessageById(id, {
-        error: "That's like asking a mirror for directions. Try another language!",
+        error: "Language not detected.",
         translating: false,
       });
       return;
     }
-    updateMessageById(id, { translating: true, translation: null, error: null });
+    if (msg.translationLanguage === msg.detectedLanguage) {
+      updateMessageById(id, {
+        error:
+          "That's like asking a mirror for directions. Try another language!",
+        translating: false,
+      });
+      return;
+    }
+    updateMessageById(id, {
+      translating: true,
+      translation: null,
+      error: null,
+    });
     try {
       const translated = await translateText(
         msg.text,
@@ -171,16 +219,28 @@ function App() {
       );
       if (typeof translated === "string") {
         if (translated.includes("API key not valid")) {
-          updateMessageById(id, { error: "Invalid API key.", translating: false });
+          updateMessageById(id, {
+            error: "Invalid API key.",
+            translating: false,
+          });
           return;
         }
         if (!translated.startsWith("Error:")) {
-          updateMessageById(id, { translation: translated, translating: false });
+          updateMessageById(id, {
+            translation: translated,
+            translating: false,
+          });
         } else {
-          updateMessageById(id, { error: translated || "Translation failed.", translating: false });
+          updateMessageById(id, {
+            error: translated || "Translation failed.",
+            translating: false,
+          });
         }
       } else {
-        updateMessageById(id, { error: "Translation failed.", translating: false });
+        updateMessageById(id, {
+          error: "Translation failed.",
+          translating: false,
+        });
       }
     } catch (err) {
       updateMessageById(id, {
@@ -197,7 +257,10 @@ function App() {
     updateMessageById(id, { summarizing: true, summary: null, error: null });
 
     if (!window.ai || !window.ai.summarizer) {
-      updateMessageById(id, { error: "Summarizer API not available.", summarizing: false });
+      updateMessageById(id, {
+        error: "Summarizer API not available.",
+        summarizing: false,
+      });
       return;
     }
 
@@ -209,10 +272,16 @@ function App() {
       if (typeof summary === "string" && !summary.startsWith("Error:")) {
         updateMessageById(id, { summary, summarizing: false });
       } else {
-        updateMessageById(id, { error: summary || "Summarization failed.", summarizing: false });
+        updateMessageById(id, {
+          error: summary || "Summarization failed.",
+          summarizing: false,
+        });
       }
     } catch (err) {
-      updateMessageById(id, { error: "Summarization error.", summarizing: false });
+      updateMessageById(id, {
+        error: "Summarization error.",
+        summarizing: false,
+      });
     }
   };
 
@@ -227,6 +296,12 @@ function App() {
     return lang ? lang.label : "Unknown";
   };
 
+  // If the intro is still showing, render the landing page
+  if (introShown) {
+    return <LandingPage onStart={() => setIntroShown(false)} />;
+  }
+
+  // Render the main chat interface once the landing page is dismissed
   return (
     <div data-theme={currentTheme} className="min-h-screen flex flex-col">
       <NavBar
