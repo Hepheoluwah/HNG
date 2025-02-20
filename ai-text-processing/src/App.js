@@ -4,7 +4,7 @@ import ChatInput from "./components/ChatInput";
 import NavBar from "./components/Navbar";
 import { processText, translateText, summarizeText } from "./services/aiApi";
 
-// Languages array
+// Supported languages array
 export const LANGUAGES = [
   { code: "en", label: "English" },
   { code: "pt", label: "Portuguese" },
@@ -110,7 +110,7 @@ function App() {
       prev.map((msg) => (msg.id === id ? { ...msg, ...newData } : msg))
     );
 
-  // Handle sending new message
+  // Handle sending a new message
   const handleSend = async (e) => {
     e.preventDefault();
     setError(null);
@@ -118,7 +118,6 @@ function App() {
       setError("Input text cannot be empty.");
       return;
     }
-
     const newMessage = {
       id: Date.now(),
       text: inputText,
@@ -136,10 +135,7 @@ function App() {
     try {
       const result = await processText(newMessage.text);
       if (result.error) {
-        updateMessageById(newMessage.id, {
-          error: result.error,
-          loading: false,
-        });
+        updateMessageById(newMessage.id, { error: result.error, loading: false });
       } else {
         updateMessageById(newMessage.id, {
           detectedLanguage: result.detectedLanguage || "en",
@@ -147,14 +143,11 @@ function App() {
         });
       }
     } catch (err) {
-      updateMessageById(newMessage.id, {
-        error: "Failed to process text.",
-        loading: false,
-      });
+      updateMessageById(newMessage.id, { error: "Failed to process text.", loading: false });
     }
   };
 
-  // Handle translation for a message
+  // Handle translating a message
   const handleTranslate = async (id) => {
     const msg = messages.find((m) => m.id === id);
     if (!msg) return;
@@ -164,7 +157,7 @@ function App() {
     }
     if (msg.translationLanguage === msg.detectedLanguage) {
       updateMessageById(id, {
-        error: "That's like asking a mirror for directions. 🪞😆 Try another language!",
+        error: "That's like asking a mirror for directions. Try another language!",
         translating: false,
       });
       return;
@@ -197,7 +190,7 @@ function App() {
     }
   };
 
-  // Handle summarization for a message with session checks
+  // Handle summarizing a message
   const handleSummarize = async (id) => {
     const msg = messages.find((m) => m.id === id);
     if (!msg) return;
@@ -219,11 +212,7 @@ function App() {
         updateMessageById(id, { error: summary || "Summarization failed.", summarizing: false });
       }
     } catch (err) {
-      if (err.name === "InvalidStateError") {
-        updateMessageById(id, { error: "Summarizer session error.", summarizing: false });
-      } else {
-        updateMessageById(id, { error: "Summarization error.", summarizing: false });
-      }
+      updateMessageById(id, { error: "Summarization error.", summarizing: false });
     }
   };
 
@@ -232,7 +221,7 @@ function App() {
     updateMessageById(id, { translationLanguage: newLang });
   };
 
-  // Helper: get language label by code
+  // Helper: get language label from code
   const getLanguageLabel = (code) => {
     const lang = LANGUAGES.find((l) => l.code === code);
     return lang ? lang.label : "Unknown";
@@ -240,7 +229,6 @@ function App() {
 
   return (
     <div data-theme={currentTheme} className="min-h-screen flex flex-col">
-      {/* NavBar Component */}
       <NavBar
         currentTheme={currentTheme}
         toggleTheme={toggleTheme}
@@ -248,8 +236,6 @@ function App() {
         loadConversations={loadConversations}
         clearChat={clearChat}
       />
-
-      {/* Chat Output Component */}
       <ChatOutput
         messages={messages}
         deleteMessage={deleteMessage}
@@ -263,8 +249,6 @@ function App() {
         setCopiedSummary={setCopiedSummary}
         messagesEndRef={messagesEndRef}
       />
-
-      {/* Chat Input Component */}
       <ChatInput
         inputText={inputText}
         setInputText={setInputText}
