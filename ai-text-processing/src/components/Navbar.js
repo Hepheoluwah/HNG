@@ -1,35 +1,52 @@
-// src/components/Navbar.js
+// NavBar.js
 import React from "react";
 import { FaTrash, FaMoon, FaSun } from "react-icons/fa";
 
-const Navbar = ({ clearChat, toggleTheme, currentTheme }) => {
+const NavBar = ({
+  currentTheme,
+  toggleTheme,
+  saveConversation,
+  loadConversations,
+  clearChat,
+}) => {
   return (
-    <div className="navbar bg-base-100 shadow">
-      <div className="flex-1 px-2 mx-2">
-        <span className="text-lg font-bold">AI-Powered Text Processing</span>
-      </div>
-      <div className="flex-none space-x-2 pr-4">
-        {/* Clear Chat */}
-        <button
-          onClick={clearChat}
-          className="btn btn-error btn-sm gap-2"
-          aria-label="Clear chat"
-        >
-          <FaTrash />
-          Clear
-        </button>
-        {/* Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="btn btn-secondary btn-sm gap-2"
-          aria-label="Toggle theme"
-        >
-          {currentTheme === "light" ? <FaMoon /> : <FaSun />}
-          {currentTheme === "light" ? "Dark" : "Light"}
-        </button>
+    <div className="navbar bg-base-100 shadow px-4 py-2">
+      <div className="w-full flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div className="text-xl font-bold">AI-Powered Text Processing</div>
+        <div className="flex flex-wrap items-center gap-2 justify-center md:justify-end">
+          <button
+            onClick={saveConversation}
+            className="btn btn-outline btn-sm md:btn-md"
+            aria-label="Save conversation"
+          >
+            Save Conversation
+          </button>
+          <button
+            onClick={loadConversations}
+            className="btn btn-outline btn-sm md:btn-md"
+            aria-label="Load conversation"
+          >
+            Load Conversation
+          </button>
+          <button
+            onClick={clearChat}
+            className="btn btn-error btn-sm md:btn-md flex items-center gap-1"
+            aria-label="Clear chat"
+          >
+            <FaTrash /> Clear Chat
+          </button>
+          <button
+            onClick={toggleTheme}
+            className="btn btn-secondary btn-sm md:btn-md flex items-center gap-1"
+            aria-label="Toggle theme"
+          >
+            {currentTheme === "light" ? <FaMoon /> : <FaSun />}
+            {currentTheme === "light" ? "Dark" : "Light"}
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
-export default Navbar;
+export default NavBar;

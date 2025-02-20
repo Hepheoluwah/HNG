@@ -1,243 +1,160 @@
+// API Keys and Endpoints
+const GOOGLE_LANGUAGE_DETECT_API_KEY = "YOUR_GOOGLE_LANGUAGE_DETECT_API_KEY";
+const GOOGLE_TRANSLATE_API_KEY = "YOUR_GOOGLE_TRANSLATE_API_KEY";
+const GOOGLE_SUMMARIZER_API_KEY = "YOUR_GOOGLE_SUMMARIZER_API_KEY";
+const GOOGLE_SUMMARIZER_ENDPOINT = "https://api.google.com/summarizer"; // Replace with actual endpoint
 
-
-
-const GOOGLE_LANGUAGE_DETECT_API_KEY = "AlvnQOgXEaDkm1KTvW3ZasTnP5EAdLCnhbhfTzwAE2D5V1t2jyJ3+jjnQWgXOtgO40FeJ2rt7V69DIsxHW/7uA4AAABXeyJvcmlnaW4iOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJmZWF0dXJlIjoiTGFuZ3VhZ2VEZXRlY3Rpb25BUEkiLCJleHBpcnkiOjE3NDk1OTk5OTl9";
-
+// Process text: Detect language, optionally summarize if long
 export const processText = async (text) => {
-    try {
-        let detectedLanguage = null;
-        let confidence = null;
+  try {
+    let detectedLanguage = null;
+    let confidence = null;
 
-        // Try using window.ai.languageDetector if available
-        if (window.ai?.languageDetector) {
-            console.log("Using window.ai.languageDetector...");
-            const detector = await window.ai.languageDetector.create();
-            await detector.ready;
-
-            console.log("Detecting language...");
-            const results = await detector.detect(text);
-            if (!results || results.length === 0) throw new Error("Could not detect language.");
-
-            detectedLanguage = results[0].detectedLanguage;
-            confidence = results[0].confidence;
-        } else {
-            console.warn("window.ai.languageDetector is unavailable. Falling back to Google Language Detection API.");
-            const fallbackResult = await detectLanguageWithGoogle(text);
-            if (fallbackResult.error) throw new Error(fallbackResult.error);
-
-            detectedLanguage = fallbackResult.language;
-            confidence = fallbackResult.confidence;
-        }
-
-        console.log(`Detected Language: ${detectedLanguage} (Confidence: ${confidence})`);
-
-        let summary = null;
-        if (text.length > 150) {
-            console.log("Text exceeds 150 characters. Summarizing...");
-            summary = await summarizeText(text);
-        }
-
-        return {
-            detectedLanguage,
-            confidence,
-            summary,
-            showSummarizeButton: text.length > 120
-        };
-    } catch (error) {
-        console.error("Error processing text:", error.message);
-        return { error: error.message };
+    // Use window.ai.languageDetector if available, otherwise fallback to Google API
+    if (window.ai?.languageDetector) {
+      console.log("Using window.ai.languageDetector...");
+      const detector = await window.ai.languageDetector.create();
+      await detector.ready;
+      console.log("Detecting language...");
+      const results = await detector.detect(text);
+      if (!results || results.length === 0) throw new Error("Could not detect language.");
+      detectedLanguage = results[0].detectedLanguage;
+      confidence = results[0].confidence;
+    } else {
+      console.warn("window.ai.languageDetector is unavailable. Using Google Language Detection API.");
+      const fallbackResult = await detectLanguageWithGoogle(text);
+      if (fallbackResult.error) throw new Error(fallbackResult.error);
+      detectedLanguage = fallbackResult.language;
+      confidence = fallbackResult.confidence;
     }
+
+    console.log(`Detected Language: ${detectedLanguage} (Confidence: ${confidence})`);
+
+    let summary = null;
+    if (text.length > 150) {
+      console.log("Text exceeds 150 characters. Summarizing...");
+      summary = await summarizeText(text);
+    }
+
+    return {
+      detectedLanguage,
+      confidence,
+      summary,
+      showSummarizeButton: text.length > 120,
+    };
+  } catch (error) {
+    console.error("Error processing text:", error.message);
+    return { error: error.message };
+  }
 };
 
-// Helper function to detect language using Google Translate API
+// Detect language using Google Translate API as fallback
 async function detectLanguageWithGoogle(text) {
-    try {
-        const response = await fetch(
-            `https://translation.googleapis.com/language/translate/v2/detect?key=${GOOGLE_LANGUAGE_DETECT_API_KEY}`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    q: text
-                }),
-            }
-        );
-
-        const data = await response.json();
-
-        if (data.error) {
-            console.error("Google Language Detection API Error:", data.error.message);
-            return { error: data.error.message };
-        }
-
-        const detection = data.data.detections[0][0];
-        return {
-            language: detection.language,
-            confidence: detection.confidence
-        };
-    } catch (error) {
-        console.error("Error with Google Language Detection API:", error);
-        return { error: "Unable to detect language." };
+  try {
+    const response = await fetch(
+      `https://translation.googleapis.com/language/translate/v2/detect?key=${GOOGLE_LANGUAGE_DETECT_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ q: text }),
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.error("Google Language Detection API Error:", data.error.message);
+      return { error: data.error.message };
     }
+    const detection = data.data.detections[0][0];
+    return {
+      language: detection.language,
+      confidence: detection.confidence,
+    };
+  } catch (error) {
+    console.error("Error with Google Language Detection API:", error);
+    return { error: "Hmm... I can't figure out what language this is. Maybe it's from another planet? 🛸" };
+  }
 }
 
-
-
-
-
-
-
-const GOOGLE_TRANSLATE_API_KEY = "Aoeg49e8gXziww8aMaciOT3ocfAg14TCdd6srBr0/ENCVaog72otR4Or4Qjz9qByZNGl2mbK/pxvft9j0jf8sw0AAABReyJvcmlnaW4iOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJmZWF0dXJlIjoiVHJhbnNsYXRpb25BUEkiLCJleHBpcnkiOjE3NTMxNDI0MDB9";
-
+// Translation functions
 export async function translateText(text, targetLanguage, detectedLanguage) {
-    // const sourceLanguage = "en";
-    const sourceLanguage = detectedLanguage || "en";
-    console.log("sourceLanguage >>>>>>>>>>>> "  +  sourceLanguage);
-
-    try {
-        // First, try using window.ai.translator if available
-        if ("ai" in window && "translator" in window.ai) {
-            const translatorCapabilities = await window.ai.translator.capabilities();
-            const availability = translatorCapabilities.languagePairAvailable(sourceLanguage, targetLanguage);
-
-            if (availability === "no") {
-                console.warn(`Translation from ${sourceLanguage} to ${targetLanguage} is not supported.`);
-            } else {
-                if (availability === "after-download") {
-                    console.log(`Downloading language model for ${targetLanguage}...`);
-                    const translator = await window.ai.translator.create({
-                        sourceLanguage,
-                        targetLanguage,
-                        monitor(m) {
-                            m.addEventListener("downloadprogress", (e) => {
-                                console.log(`Downloaded ${e.loaded} of ${e.total} bytes.`);
-                            });
-                        },
-                    });
-                    console.log(`Language model for ${targetLanguage} downloaded.`);
-                    return await translator.translate(text);
-                }
-
-                // If translation is readily available
-                const translator = await window.ai.translator.create({ sourceLanguage, targetLanguage });
-                return await translator.translate(text);
-            }
-        }
-
-        // If window.ai.translator is unavailable, fall back to Google Translate API
-        console.warn("window.ai.translator is not available. Falling back to Google Translate API.");
-        return await translateWithGoogle(text, sourceLanguage, targetLanguage);
-
-    } catch (error) {
-        console.error("Error with AI translator:", error);
-        console.warn("Falling back to Google Translate API.");
-        return await translateWithGoogle(text, sourceLanguage, targetLanguage);
+  const sourceLanguage = detectedLanguage || "en";
+  try {
+    // If the detected language is unknown
+    if (!sourceLanguage) {
+      return "Hmm... I can't translate what I can't understand. Are you speaking in riddles? 🤔";
     }
+
+    // If the source and target languages are the same
+    if (sourceLanguage === targetLanguage) {
+      return "Nice try! But translating English to English won’t make it sound fancier. Try another language! 😆";
+    }
+
+    if (window.ai?.translator) {
+      const translatorCapabilities = await window.ai.translator.capabilities();
+      const availability = translatorCapabilities.languagePairAvailable(sourceLanguage, targetLanguage);
+
+      if (availability === "no") {
+        console.warn(`Translation from ${sourceLanguage} to ${targetLanguage} is not supported.`);
+        return `Oops! I don't speak ${targetLanguage} yet. Give me some time to learn. 😅`;
+      } else if (availability === "after-download") {
+        console.log(`Downloading language model for ${targetLanguage}...`);
+        const translator = await window.ai.translator.create({
+          sourceLanguage,
+          targetLanguage,
+          monitor(m) {
+            m.addEventListener("downloadprogress", (e) => {
+              console.log(`Downloaded ${e.loaded} of ${e.total} bytes.`);
+            });
+          },
+        });
+        console.log(`Language model for ${targetLanguage} downloaded.`);
+        return await translator.translate(text);
+      } else {
+        const translator = await window.ai.translator.create({
+          sourceLanguage,
+          targetLanguage,
+        });
+        return await translator.translate(text);
+      }
+    }
+    console.warn("window.ai.translator is not available. Falling back to Google Translate API.");
+    return await translateWithGoogle(text, sourceLanguage, targetLanguage);
+  } catch (error) {
+    console.error("Error with AI translator:", error);
+    console.warn("Falling back to Google Translate API.");
+    return await translateWithGoogle(text, sourceLanguage, targetLanguage);
+  }
 }
 
-// Helper function to use Google Translate API
 async function translateWithGoogle(text, sourceLanguage, targetLanguage) {
-    try {
-        const response = await fetch(
-            `https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_TRANSLATE_API_KEY}`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    q: text,
-                    source: sourceLanguage,
-                    target: targetLanguage,
-                    format: "text",
-                }),
-            }
-        );
-
-        const data = await response.json();
-
-        if (data.error) {
-            console.error("Google Translate API Error:", data.error.message);
-            return `Error: ${data.error.message}`;
-        }
-
-        return data.data.translations[0].translatedText;
-    } catch (error) {
-        console.error("Error with Google Translate API:", error);
-        return "Error: Unable to translate.";
-    }
+  const GOOGLE_TRANSLATE_ENDPOINT = "https://translation.googleapis.com/language/translate/v2";
+  try {
+    const response = await fetch(
+      `${GOOGLE_TRANSLATE_ENDPOINT}?key=${GOOGLE_TRANSLATE_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          q: text,
+          source: sourceLanguage,
+          target: targetLanguage,
+          format: "text",
+        }),
+      }
+    );
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message);
+    return data.data.translations[0].translatedText;
+  } catch (error) {
+    console.error("Error using Google Translate API:", error);
+    return "Translation failed. Maybe your text prefers to stay where it is? 🤔";
+  }
 }
 
-
-
-
-// export const summarizeText = async (text) => {
-//     try {
-//       if (window.ai && window.ai.summarizer) {
-//         console.log("Using window.ai.summarizer...");
-  
-//         // Check if summarizer is available before creating session
-//         if (!window.ai.summarizer.create) {
-//           throw new Error("Summarizer API is not properly initialized.");
-//         }
-  
-//         const summarizer = await window.ai.summarizer.create();
-//         await summarizer.ready;
-//         return await summarizer.summarize(text);
-//       } else {
-//         console.warn("window.ai.summarizer is unavailable. Falling back to basic summarization.");
-//         return text.length > 150 ? text.substring(0, 150) + "..." : text;
-//       }
-//     } catch (error) {
-//       console.error("Error with AI summarizer:", error);
-//       return text.length > 150 ? text.substring(0, 150) + "..." : text;
-//     }
-//   };
-
-
-//   export const summarizeText = async (text) => {
-//     try {
-//       if (window.ai && window.ai.summarizer) {
-//         console.log("Using window.ai.summarizer...");
-  
-//         // Directly use the API key
-//         const apiKey = process.env.REACT_APP_SUMMARIZER_API_KEY || "ApywZEcawPu3bp6OLLTdoGZKtPjN5sKcNOYQ7FrAJbcOp/vfx7SNIZu8Zxj9gqcIPXzkGd5/KiS1HpvUvKee5gwAAABVeyJvcmlnaW4iOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJmZWF0dXJlIjoiQUlTdW1tYXJpemF0aW9uQVBJIiwiZXhwaXJ5IjoxNzUzMTQyNDAwfQ==";
-  
-//         if (!apiKey) {
-//           console.error("Missing API Key!");
-//           return "Error: Missing API Key.";
-//         }
-  
-//         // Set the API key if required
-//         window.ai.apiKey = apiKey;
-  
-//         const summarizer = await window.ai.summarizer.create();
-//         await summarizer.ready;
-  
-//         const summary = await summarizer.summarize(text);
-//         console.log("Summary result:", summary);
-//         return summary;
-//       } else {
-//         console.warn("AI summarizer is unavailable. Using basic summarization.");
-//         return text.length > 120 ? text.substring(0, 120) + "..." : text;
-//       }
-//     } catch (error) {
-//       console.error("AI Summarizer Error:", error);
-//       return "Could not summarize the text. Try again later.";
-//     }
-//   };
-  
-  
-
-const GOOGLE_SUMMARIZER_API_KEY = "ApywZEcawPu3bp6OLLTdoGZKtPjN5sKcNOYQ7FrAJbcOp/vfx7SNIZu8Zxj9gqcIPXzkGd5/KiS1HpvUvKee5gwAAABVeyJvcmlnaW4iOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJmZWF0dXJlIjoiQUlTdW1tYXJpemF0aW9uQVBJIiwiZXhwaXJ5IjoxNzUzMTQyNDAwfQ==";
-const GOOGLE_SUMMARIZER_ENDPOINT = "https://api.google.com/summarizer"; // Replace with the actual endpoint
-
+// Summarization functions
 export async function summarizeText(text) {
   try {
-    // First, try to use the built-in summarizer if available
-    if ("ai" in window && "summarizer" in window.ai) {
+    if (window.ai?.summarizer) {
       const summarizer = await window.ai.summarizer.create();
       return await summarizer.summarize(text);
     }
@@ -256,19 +173,16 @@ async function summarizeWithGoogle(text) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${GOOGLE_SUMMARIZER_API_KEY}`,
+        Authorization: `Bearer ${GOOGLE_SUMMARIZER_API_KEY}`,
       },
       body: JSON.stringify({ text }),
     });
     const data = await response.json();
-    if (data.error) {
-      throw new Error(data.error);
-    }
-    return data.summary; // Adjust this if the API returns the summary in a different property
+    if (data.error) throw new Error(data.error);
+    return data.summary;
   } catch (error) {
     console.error("Error using Google Summarizer API:", error);
-    console.warn("AI summarizer is unavailable. Using basic summarization.");
-    // Basic fallback: return first 120 characters with ellipsis if text is longer than 120 chars
+    console.warn("Using basic summarization fallback.");
     return text.length > 120 ? text.substring(0, 120) + "..." : text;
   }
 }
