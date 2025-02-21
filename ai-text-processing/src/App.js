@@ -34,9 +34,10 @@ const LandingPage = ({ onStart }) => (
     </motion.div>
     <p className="mt-4 text-lg font-bold text-black text-center">
       Unlock the Power of AI for Text Processing <br />
-      Instantly Detect, Translate, and Summarize text with our intuitive
+      Instantly <span className="text-[#7d65f4]">Detect</span>,{" "}
+      <span className="text-[#13cdfc]">Translate</span>, and{" "}
+      <span className="text-[#7d65f4]">Summarize</span> text with our intuitive
       platform. <br />
-      Click the icon or the button below to get started!
     </p>
     <button
       onClick={onStart}
