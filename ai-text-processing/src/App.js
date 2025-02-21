@@ -33,11 +33,14 @@ const LandingPage = ({ onStart }) => (
       />
     </motion.div>
     <p className="mt-4 text-lg font-bold text-black text-center">
-    AI-Powered Text Processing Interface <br /> Click the icon or the button below to get started!
+      Unlock the Power of AI for Text Processing <br />
+      Instantly Detect, Translate, and Summarize text with our intuitive
+      platform. <br />
+      Click the icon or the button below to get started!
     </p>
     <button
       onClick={onStart}
-      className="mt-5 px-6 py-3 text-base font-bold text-white bg-black rounded-lg transition-colors duration-300 hover:bg-gray-800 focus:outline-none"
+      className="mt-5 px-6 py-3 text-base font-bold text-white bg-black rounded-lg transition-all duration-300 transform hover:scale-90 focus:outline-none focus:ring-4 focus:ring-blue-500"
     >
       Get Started
     </button>
