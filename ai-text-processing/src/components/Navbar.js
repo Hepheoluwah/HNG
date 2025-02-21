@@ -1,12 +1,14 @@
 import React from "react";
 import { FaTrash, FaMoon, FaSun } from "react-icons/fa";
-import Logo from "..//../src/images/chaticon2.png"
+import Logo from "../../src/images/chaticon2.png"; // Adjust path if needed
+
 const NavBar = ({
   currentTheme,
   toggleTheme,
   saveConversation,
   loadConversations,
   clearChat,
+  onLogoClick, // New prop for handling logo click
 }) => {
   return (
     <div className="navbar bg-base-100 shadow px-4 py-2">
@@ -16,9 +18,12 @@ const NavBar = ({
           <img
             src={Logo}
             alt="Logo"
-            className="w-10 h-10" // Adjust width and height as needed
+            className="w-10 h-10 cursor-pointer"
+            onClick={onLogoClick}
           />
-          <div className="text-xl font-bold">AI-Powered Text Processing</div>
+          <div className="text-xl font-bold cursor-pointer" onClick={onLogoClick}>
+            AI-Powered Text Processing
+          </div>
         </div>
         <div className="flex flex-wrap items-center gap-2 justify-center md:justify-end">
           <button
