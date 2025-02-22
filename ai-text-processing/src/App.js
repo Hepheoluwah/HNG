@@ -329,7 +329,7 @@ function App() {
     if (msg.translationLanguage === msg.detectedLanguage) {
       updateMessageById(id, {
         error:
-          "Source and target language cannot be the same. Please choose a different target language.",
+          "Can't translate to the same language. Please choose a different target language.",
         translating: false,
       });
       return;
