@@ -151,6 +151,11 @@ const LandingPage = ({ onStart }) => (
         </motion.div>
       </motion.div>
     </section>
+    <footer className="mt-12 text-center text-sm opacity-75">
+  Developed and designed with <span className="text-red-400">♡</span> by{" "}
+  <span className="font-semibold">0x_Ifeoluwa</span>
+</footer>
+
   </div>
 );
 

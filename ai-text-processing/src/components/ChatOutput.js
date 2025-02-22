@@ -217,7 +217,13 @@ const ChatOutput = ({
           </motion.div>
         ))
       )}
+       <div className="absolute bottom-2 right-4 text-gray-500 text-xs opacity-50">
+        Powered by <span className="font-bold">0x_ifeoluwa</span>
+      </div>
       <div ref={messagesEndRef} />
+      <div className="absolute bottom-2 right-4 text-gray-500 text-xs opacity-50">
+        Powered by <span className="font-bold">0x_ifeoluwa</span>
+      </div>
     </div>
   );
 };
