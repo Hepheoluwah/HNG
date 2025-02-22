@@ -78,7 +78,7 @@ const ChatInput = ({
             )}
           </button>
           <button
-            type="submit"
+            type="submit"i
             className="btn btn-primary bg-send-btn btn-lg flex items-center gap-2 border-2 border-gray-500 dark:border-gray-500"
             aria-label="Send text"
           >

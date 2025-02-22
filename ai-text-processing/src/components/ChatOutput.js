@@ -23,8 +23,8 @@ const ChatOutput = ({
     <div className="flex-grow p-4 overflow-auto bg-base-200">
       {messages.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-full text-center font-sans">
-          <p className="text-2xl font-bold text-gray-700">
-            What can I help with?
+          <p className="text-2xl font-bold p-10 text-gray-700">
+            What would you like to translate or get summarized?
           </p>
         </div>
       ) : (
