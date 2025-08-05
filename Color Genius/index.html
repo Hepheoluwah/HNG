@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Color Quest</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Color Quest - Enhanced</title>
     <style>
       * {
         box-sizing: border-box;
@@ -12,16 +12,13 @@
         font-family: "Arial", sans-serif;
       }
       body {
-        background: linear-gradient(
-          to right,
-          rgba(255, 255, 255, 0.9),
-          rgba(200, 200, 255, 0.9)
-        );
+        background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(200, 200, 255, 0.9));
         min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-direction: column;
+        transition: background 0.5s ease;
       }
       .game-container {
         background: rgba(255, 255, 255, 0.7);
@@ -29,12 +26,15 @@
         padding: 30px;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         text-align: center;
-        max-width: 400px;
+        max-width: 450px;
         width: 100%;
       }
       h1 {
         font-size: 2.5em;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
+      }
+      .control-panel {
+        margin-bottom: 10px;
       }
       .color-box {
         width: 100px;
@@ -43,29 +43,6 @@
         margin: 20px auto;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease-in-out;
-      }
-      .color-box.correct {
-        transform: scale(1.1);
-      }
-      .color-box.wrong {
-        animation: shake 0.3s;
-      }
-      @keyframes shake {
-        0% {
-          transform: translateX(0);
-        }
-        25% {
-          transform: translateX(-5px);
-        }
-        50% {
-          transform: translateX(5px);
-        }
-        75% {
-          transform: translateX(-5px);
-        }
-        100% {
-          transform: translateX(0);
-        }
       }
       .color-options {
         display: grid;
@@ -86,12 +63,11 @@
       }
       .status-message {
         font-size: 1.2em;
-        margin: 15px 0;
+        margin: 10px 0;
       }
-      .score {
-        font-size: 1.5em;
-        font-weight: bold;
-        margin-bottom: 20px;
+      .score, .high-score {
+        font-size: 1.2em;
+        margin: 5px 0;
       }
       .new-game-button {
         background: #007bff;
@@ -102,92 +78,161 @@
         cursor: pointer;
         font-size: 1em;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        margin-top: 10px;
       }
       .new-game-button:hover {
         background: #0056b3;
       }
-      footer {
+      .modal {
         position: fixed;
-        bottom: 10px;
-        width: 100%;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+      }
+      .modal.hidden {
+        display: none;
+      }
+      .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      }
+      footer {
+        margin-top: 30px;
         text-align: center;
         font-size: 1em;
         color: #777;
       }
-    
     </style>
   </head>
   <body>
     <div class="game-container">
       <h1>Color Quest</h1>
-      <div id="colorBox" class="color-box" data-testid="colorBox"></div>
-      <p data-testid="gameInstructions">Guess the correct color!</p>
-      <div class="color-options">
-        <!-- Buttons will be inserted dynamically here -->
+      <div class="control-panel">
+        <select id="difficulty">
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+        <button id="toggleSound">🔈</button>
+        <button id="toggleMusic">🎵</button>
       </div>
-      <p id="gameStatus" class="status-message" data-testid="gameStatus"></p>
-      <p id="score" class="score" data-testid="score">Score: 0</p>
-      <button
-        id="newGameButton"
-        class="new-game-button"
-        data-testid="newGameButton"
-      >
-        New Game
-      </button>
+      <div id="colorBox" class="color-box"></div>
+      <p id="timer">Time Left: 30s</p>
+      <div class="color-options"></div>
+      <p id="gameStatus" class="status-message"></p>
+      <p class="score" id="score">Score: 0</p>
+      <p class="high-score" id="highScore">High Score: 0</p>
+      <button id="newGameButton" class="new-game-button">New Game</button>
+    </div>
+
+    <div id="modal" class="modal hidden">
+      <div class="modal-content">
+        <p id="modalMessage"></p>
+        <button onclick="closeModal()">Continue</button>
+      </div>
     </div>
 
     <footer>
-      <p>
-        Designed by
-        <a
-          href="https://0xifeoluwa.vercel.app/"
-          target="_blank"
-          style="color: #007bff"
-          >Ifeoluwa.dev</a
-        >
-        &copy; 2025
-      </p>
+      <p>Designed by <a href="https://0xifeoluwa.vercel.app/" target="_blank">Ifeoluwa.dev</a> &copy; 2025</p>
     </footer>
 
     <script>
-      const colors = [
-        "#FF5733",
-        "#33FF57",
-        "#3357FF",
-        "#FF33A8",
-        "#FFC733",
-        "#8D33FF",
-      ];
+      const easyColors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A8"];
+      const mediumColors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A8", "#FFC733", "#8D33FF"];
+      const hardColors = ["#FF5733", "#FF6B33", "#FF8033", "#FFB833", "#FFC733", "#FFD633", "#FFE033", "#FFFF33"];
+
       const colorBox = document.getElementById("colorBox");
       const colorOptionsContainer = document.querySelector(".color-options");
       const gameStatus = document.getElementById("gameStatus");
       const scoreDisplay = document.getElementById("score");
+      const highScoreDisplay = document.getElementById("highScore");
+      const timerDisplay = document.getElementById("timer");
       const newGameButton = document.getElementById("newGameButton");
+      const difficultySelect = document.getElementById("difficulty");
+      const modal = document.getElementById("modal");
+      const modalMessage = document.getElementById("modalMessage");
+
+      const bgMusic = new Audio("https://cdn.pixabay.com/download/audio/2022/03/16/audio_f229b6f1a0.mp3?filename=lofi-study-112191.mp3");
+      bgMusic.loop = true;
+
+      const correctSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_d218e41d81.mp3");
+      const wrongSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_d96f5b8a9b.mp3");
+      const milestoneSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_103930af79.mp3");
+
       let targetColor = "";
       let score = 0;
+      let highScore = localStorage.getItem("highScore") || 0;
+      let timer;
+      let timeLeft = 30;
+      let soundEnabled = true;
+
+      highScoreDisplay.textContent = `High Score: ${highScore}`;
+
+      document.getElementById("toggleSound").onclick = () => {
+        soundEnabled = !soundEnabled;
+        document.getElementById("toggleSound").textContent = soundEnabled ? "🔈" : "🔇";
+      };
+
+      document.getElementById("toggleMusic").onclick = () => {
+        if (bgMusic.paused) {
+          bgMusic.play().catch(() => {});
+          document.getElementById("toggleMusic").textContent = "🔇";
+        } else {
+          bgMusic.pause();
+          document.getElementById("toggleMusic").textContent = "🎵";
+        }
+      };
 
       function resetGame() {
+        clearInterval(timer);
         score = 0;
-        scoreDisplay.textContent = `Score: ${score}`;
+        timeLeft = 30;
         gameStatus.textContent = "";
-        gameStatus.style.color = "";
+        scoreDisplay.textContent = `Score: ${score}`;
+        timerDisplay.textContent = `Time Left: ${timeLeft}s`;
+        startTimer();
         startNewRound();
       }
 
-      function startNewRound() {
-        targetColor = colors[Math.floor(Math.random() * colors.length)];
-        colorBox.style.backgroundColor = targetColor;
-        renderColorOptions();
+      function startTimer() {
+        timer = setInterval(() => {
+          timeLeft--;
+          timerDisplay.textContent = `Time Left: ${timeLeft}s`;
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            showModal("Time’s up! Final Score: " + score);
+          }
+        }, 1000);
       }
 
-      function renderColorOptions() {
+      function getColorSet() {
+        const diff = difficultySelect.value;
+        return diff === "easy" ? easyColors : diff === "medium" ? mediumColors : hardColors;
+      }
+
+      function startNewRound() {
+        const colorSet = getColorSet();
+        targetColor = colorSet[Math.floor(Math.random() * colorSet.length)];
+        colorBox.style.backgroundColor = targetColor;
+        renderColorOptions(colorSet);
+      }
+
+      function renderColorOptions(colorSet) {
         colorOptionsContainer.innerHTML = "";
-        colors.forEach((color) => {
+        colorSet.sort(() => Math.random() - 0.5).forEach((color) => {
           const button = document.createElement("button");
-          button.classList.add("color-button");
+          button.className = "color-button";
           button.style.backgroundColor = color;
-          button.dataset.testid = "colorOption";
-          button.addEventListener("click", () => handleColorGuess(color));
+          button.onclick = () => handleColorGuess(color);
           colorOptionsContainer.appendChild(button);
         });
       }
@@ -195,29 +240,75 @@
       function handleColorGuess(color) {
         if (color === targetColor) {
           score++;
-          if (score === 5) {
-            gameStatus.textContent =
-              "Color Genius! You nailed 5 straight guesses!";
-            gameStatus.style.color = "blue";
-          } else if (score === 10) {
-            gameStatus.textContent =
-              "Eagle Eyes! You nailed 10 straight guesses!";
-            gameStatus.style.color = "blue";
-          } else {
-            gameStatus.textContent = "Correct! Keep going!";
-            gameStatus.style.color = "green";
+          if (soundEnabled) correctSound.play();
+
+          let compliment = "";
+          switch (score) {
+            case 5:
+              compliment = "Color Genius! 🎨";
+              break;
+            case 10:
+              compliment = "Eagle Eyes! 👁️‍🗨️";
+              break;
+            case 15:
+              compliment = "Sharp Shooter! 🎯 Every guess is on point!";
+              break;
+            case 20:
+              compliment = "Master of Hues! 🌈 You're unstoppable!";
+              break;
+            case 30:
+              compliment = "Legendary Vision! 🔥 Is this even human?";
+              break;
+            case 50:
+              compliment = "COLOR GOD MODE UNLOCKED! 👑🌟";
+              break;
           }
+
+          if (compliment) {
+            if (soundEnabled) milestoneSound.play();
+            showModal(compliment);
+          }
+
+          gameStatus.textContent = "Correct!";
+          gameStatus.style.color = "green";
+          document.body.style.background = targetColor;
+          setTimeout(() => {
+            document.body.style.background = "";
+          }, 400);
+
+          updateHighScore();
           scoreDisplay.textContent = `Score: ${score}`;
           startNewRound();
         } else {
-          gameStatus.textContent = "Wrong! Try again!";
+          if (soundEnabled) wrongSound.play();
+          gameStatus.textContent = "Wrong! Try again.";
           gameStatus.style.color = "red";
         }
       }
 
-      newGameButton.addEventListener("click", resetGame);
+      function updateHighScore() {
+        if (score > highScore) {
+          highScore = score;
+          localStorage.setItem("highScore", highScore);
+          highScoreDisplay.textContent = `High Score: ${highScore}`;
+        }
+      }
 
-      // Initialize the game
+      function showModal(message) {
+        modalMessage.textContent = message;
+        modal.classList.remove("hidden");
+      }
+
+      function closeModal() {
+        modal.classList.add("hidden");
+      }
+
+      newGameButton.addEventListener("click", () => {
+        resetGame();
+        if (soundEnabled && bgMusic.paused) bgMusic.play().catch(() => {});
+      });
+
+      // Initialize game
       resetGame();
     </script>
   </body>
